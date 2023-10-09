@@ -6,7 +6,7 @@ const Button = ({ name, handleClick }) => (
   <button onClick={handleClick}>{name}</button>
 );
 
-const Display = ({ name, value }) => (
+const StatisticLine = ({ name, value }) => (
   <div>
     {name} {value}
   </div>
@@ -20,7 +20,6 @@ const Statistics = ({ good, neutral, bad }) => {
   if (all === 0) {
     return (
       <>
-        <Header header="statistics" />
         <div>No feedback given</div>
       </>
     );
@@ -28,13 +27,12 @@ const Statistics = ({ good, neutral, bad }) => {
 
   return (
     <>
-      <Header header="statistics" />
-      <Display name="good" value={good} />
-      <Display name="neutral" value={neutral} />
-      <Display name="bad" value={bad} />
-      <Display name="all" value={all} />
-      <Display name="average" value={average} />
-      <Display name="positive" value={`${positive * 100} %`} />{" "}
+      <StatisticLine name="good" value={good} />
+      <StatisticLine name="neutral" value={neutral} />
+      <StatisticLine name="bad" value={bad} />
+      <StatisticLine name="all" value={all} />
+      <StatisticLine name="average" value={average} />
+      <StatisticLine name="positive" value={`${positive * 100} %`} />{" "}
     </>
   );
 };
@@ -55,6 +53,7 @@ const App = () => {
       <Button name="good" handleClick={handleGoodClick} />
       <Button name="neutral" handleClick={handleNeutralClick} />
       <Button name="bad" handleClick={handleBadClick} />
+      <Header header="statistics" />
       <Statistics good={good} neutral={neutral} bad={bad} />
     </div>
   );
