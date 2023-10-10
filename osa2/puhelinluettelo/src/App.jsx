@@ -1,18 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: "Arto Hellas", phoneNumber: "040-123456" },
-    { name: "Ada Lovelace", phoneNumber: "39-44-5323523" },
-    { name: "Dan Abramov", phoneNumber: "12-43-234345" },
-    { name: "Mary Poppendieck", phoneNumber: "39-23-6423122" },
-  ]);
+  const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newPhoneNumber, setNewPhoneNumber] = useState(null);
   const [filterCondition, setFilterCondition] = useState("");
+
+  useEffect(() => {
+    axios.get("http://localhost:3001/persons").then((res) => {
+      setPersons(res.data);
+    });
+  }, []);
 
   const handleFilterChange = () => {
     setFilterCondition(event.target.value);
@@ -28,7 +30,7 @@ const App = () => {
 
   const handleSubmit = () => {
     event.preventDefault();
-    const newPerson = { name: newName, phoneNumber: newPhoneNumber };
+    const newPerson = { name: newName, number: newPhoneNumber };
     const checkIfPersonExists = persons.find(
       (person) => person.name.toLowerCase() === newPerson.name.toLowerCase()
     );
