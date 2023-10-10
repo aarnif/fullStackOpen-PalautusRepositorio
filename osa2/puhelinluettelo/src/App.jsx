@@ -1,16 +1,23 @@
 import { useState } from "react";
 
 const App = () => {
-  const [persons, setPersons] = useState([{ name: "Arto Hellas" }]);
+  const [persons, setPersons] = useState([
+    { name: "Arto Hellas", phoneNumber: "040-1231244" },
+  ]);
   const [newName, setNewName] = useState("");
+  const [newPhoneNumber, setNewPhoneNumber] = useState(null);
 
-  const handleChange = () => {
+  const handleNameChange = () => {
     setNewName(event.target.value);
+  };
+
+  const handlePhoneNumberChange = () => {
+    setNewPhoneNumber(event.target.value);
   };
 
   const handleSubmit = () => {
     event.preventDefault();
-    const newPerson = { name: newName };
+    const newPerson = { name: newName, phoneNumber: newPhoneNumber };
     const checkIfPersonExists = persons.find(
       (person) => person.name.toLowerCase() === newPerson.name.toLowerCase()
     );
@@ -25,9 +32,12 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <form onChange={handleChange}>
+      <form>
         <div>
-          name: <input />
+          name: <input onChange={handleNameChange} />
+        </div>
+        <div>
+          number: <input onChange={handlePhoneNumberChange} />
         </div>
         <div>
           <button type="submit" onClick={handleSubmit}>
@@ -37,7 +47,9 @@ const App = () => {
       </form>
       <h2>Numbers</h2>
       {persons.map((person) => (
-        <p key={person.name}>{person.name}</p>
+        <p key={person.name}>
+          {person.name} {person.phoneNumber}
+        </p>
       ))}
     </div>
   );
