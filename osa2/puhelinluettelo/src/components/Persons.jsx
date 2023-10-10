@@ -1,0 +1,15 @@
+import React from "react";
+
+const Persons = ({ persons }) => {
+  return (
+    <>
+      {persons.map((person) => (
+        <p key={person.name}>
+          {person.name} {person.phoneNumber}
+        </p>
+      ))}
+    </>
+  );
+};
+
+export default Persons;
