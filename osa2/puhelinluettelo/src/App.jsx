@@ -3,6 +3,7 @@ import axios from "axios";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
+import { getAllPersons, addNewPerson } from "./phoneService.js";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -11,9 +12,7 @@ const App = () => {
   const [filterCondition, setFilterCondition] = useState("");
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then((res) => {
-      setPersons(res.data);
-    });
+    getAllPersons().then((data) => setPersons(data));
   }, []);
 
   const handleFilterChange = () => {
@@ -40,8 +39,7 @@ const App = () => {
       return;
     }
 
-    axios.post("http://localhost:3001/persons", newPerson);
-    setPersons(persons.concat(newPerson));
+    addNewPerson(newPerson).then(setPersons(persons.concat(newPerson)));
   };
 
   const shownPersons = persons.filter((person) =>
