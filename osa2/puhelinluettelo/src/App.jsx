@@ -3,7 +3,12 @@ import axios from "axios";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
-import { getAllPersons, addNewPerson, deletePerson } from "./phoneService.js";
+import {
+  getAllPersons,
+  addNewPerson,
+  deletePerson,
+  updatePhoneNumber,
+} from "./phoneService.js";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -49,15 +54,29 @@ const App = () => {
     );
 
     if (checkIfPersonExists) {
-      alert(`${newPerson.name} is already added to phonebook`);
-      return;
+      const confirmUpdatePhoneNumber = confirm(
+        `${newPerson.name} is already added to phonebook, replace the old number with a new one?`
+      );
+      if (confirmUpdatePhoneNumber) {
+        updatePhoneNumber({
+          ...checkIfPersonExists,
+          number: newPhoneNumber,
+        }).then(() => {
+          const updatedPersons = persons.map((person) =>
+            person.id === checkIfPersonExists.id
+              ? { ...person, number: newPhoneNumber }
+              : person
+          );
+          setPersons(updatedPersons);
+        });
+      }
     } else {
       addNewPerson(newPerson).then((res) => {
         setPersons(persons.concat(res));
       });
-      setNewName("");
-      setNewPhoneNumber("");
     }
+    setNewName("");
+    setNewPhoneNumber("");
   };
 
   const shownPersons = persons.filter((person) =>
