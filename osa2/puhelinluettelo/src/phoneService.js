@@ -6,9 +6,14 @@ const getAllPersons = () => {
   return request.then((response) => response.data);
 };
 
-const addNewPerson = (newObject) => {
-  const request = axios.post(baseUrl, newObject);
+const addNewPerson = (newPerson) => {
+  const request = axios.post(baseUrl, newPerson);
   return request.then((response) => response.data);
 };
 
-export { getAllPersons, addNewPerson };
+const deletePerson = (id) => {
+  const request = axios.delete(`${baseUrl}/${id}`);
+  return request.then((response) => response.data);
+};
+
+export { getAllPersons, addNewPerson, deletePerson };

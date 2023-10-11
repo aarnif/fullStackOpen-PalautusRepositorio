@@ -3,12 +3,12 @@ import axios from "axios";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
-import { getAllPersons, addNewPerson } from "./phoneService.js";
+import { getAllPersons, addNewPerson, deletePerson } from "./phoneService.js";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
-  const [newPhoneNumber, setNewPhoneNumber] = useState(null);
+  const [newPhoneNumber, setNewPhoneNumber] = useState("");
   const [filterCondition, setFilterCondition] = useState("");
 
   useEffect(() => {
@@ -27,6 +27,20 @@ const App = () => {
     setNewPhoneNumber(event.target.value);
   };
 
+  const handleDeletePerson = (person) => {
+    const confirmDeletePerson = confirm(`Delete ${person.name} ?`);
+
+    if (confirmDeletePerson) {
+      const deletePersonId = person.id;
+      deletePerson(deletePersonId).then((res) => {
+        const newPersons = persons.filter(
+          (person) => person.id !== deletePersonId
+        );
+        setPersons(newPersons);
+      });
+    }
+  };
+
   const handleSubmit = () => {
     event.preventDefault();
     const newPerson = { name: newName, number: newPhoneNumber };
@@ -37,9 +51,13 @@ const App = () => {
     if (checkIfPersonExists) {
       alert(`${newPerson.name} is already added to phonebook`);
       return;
+    } else {
+      addNewPerson(newPerson).then((res) => {
+        setPersons(persons.concat(res));
+      });
+      setNewName("");
+      setNewPhoneNumber("");
     }
-
-    addNewPerson(newPerson).then(setPersons(persons.concat(newPerson)));
   };
 
   const shownPersons = persons.filter((person) =>
@@ -52,12 +70,14 @@ const App = () => {
       <Filter handleFilterChange={handleFilterChange} />
       <h2>add a new</h2>
       <PersonForm
+        newName={newName}
+        newPhoneNumber={newPhoneNumber}
         handleNameChange={handleNameChange}
         handlePhoneNumberChange={handlePhoneNumberChange}
         handleSubmit={handleSubmit}
       />
       <h2>Numbers</h2>
-      <Persons persons={shownPersons} />
+      <Persons persons={shownPersons} handleDeletePerson={handleDeletePerson} />
     </div>
   );
 };
