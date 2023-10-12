@@ -16,7 +16,10 @@ function App() {
   const handleCountryFormChange = () => {
     const inputValue = event.target.value;
     setSearchWord(inputValue);
-    console.log(inputValue);
+  };
+
+  const handleShowCountry = (countryName) => {
+    setSearchWord(countryName);
   };
 
   const showCountries = countries.filter((country) =>
@@ -26,7 +29,9 @@ function App() {
   if (searchWord && showCountries.length > 10) {
     showPart = <div>Too many matches, specify another filter</div>;
   } else if (showCountries.length <= 10 && showCountries.length > 1) {
-    showPart = <Countries countries={showCountries} />;
+    showPart = (
+      <Countries countries={showCountries} handleShow={handleShowCountry} />
+    );
   } else if (showCountries.length == 1) {
     showPart = <Country country={showCountries[0]} />;
   } else if (searchWord.length > 0) {
@@ -35,7 +40,10 @@ function App() {
 
   return (
     <>
-      <CountryForm handleChange={handleCountryFormChange} />
+      <CountryForm
+        searchWord={searchWord}
+        handleChange={handleCountryFormChange}
+      />
       {showPart}
     </>
   );
