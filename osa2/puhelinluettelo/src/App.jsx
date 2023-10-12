@@ -15,7 +15,10 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newPhoneNumber, setNewPhoneNumber] = useState("");
   const [filterCondition, setFilterCondition] = useState("");
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [message, setMessage] = useState(null);
+  const [messageType, setMessageType] = useState(null);
+  const successMessageType = "success";
+  const errorMessageType = "error";
 
   useEffect(() => {
     getAllPersons().then((data) => setPersons(data));
@@ -38,21 +41,58 @@ const App = () => {
 
     if (confirmDeletePerson) {
       const deletePersonId = person.id;
-      deletePerson(deletePersonId).then((res) => {
-        const newPersons = persons.filter(
-          (person) => person.id !== deletePersonId
-        );
-        displayErrorMessage(`Deleted ${person.name}`);
-        setPersons(newPersons);
-      });
+      const newPersons = persons.filter(
+        (person) => person.id !== deletePersonId
+      );
+      deletePerson(deletePersonId)
+        .then(() => {
+          displayMessage(`Deleted ${person.name}`, successMessageType);
+          setPersons(newPersons);
+        })
+        .catch(() => {
+          displayMessage(
+            `Information of ${person.name} has already been removed from server`,
+            errorMessageType
+          );
+          setPersons(newPersons);
+        });
     }
   };
 
-  const displayErrorMessage = (message) => {
-    setErrorMessage(message);
-    setTimeout(() => {
-      setErrorMessage(null);
-    }, 2000);
+  const handleUpdatePhoneNumber = (currentData, newData) => {
+    updatePhoneNumber({
+      ...currentData,
+      number: newData.number,
+    })
+      .then(() => {
+        const updatedPersons = persons.map((person) =>
+          currentData.id === person.id
+            ? { ...person, number: newData.number }
+            : person
+        );
+        displayMessage(
+          `Updated phone number for ${newData.name}`,
+          successMessageType
+        );
+        setPersons(updatedPersons);
+      })
+      .catch(() => {
+        displayMessage(
+          `Information of ${newData.name} has already been removed from server`,
+          errorMessageType
+        );
+        const currentPersons = persons.filter(
+          (person) => currentData.id !== person.id
+        );
+        setPersons(currentPersons);
+      });
+  };
+
+  const handleAddPerson = (person) => {
+    addNewPerson(person).then((res) => {
+      displayMessage(`Added ${person.name}`, successMessageType);
+      setPersons(persons.concat(res));
+    });
   };
 
   const handleSubmit = () => {
@@ -67,27 +107,22 @@ const App = () => {
         `${newPerson.name} is already added to phonebook, replace the old number with a new one?`
       );
       if (confirmUpdatePhoneNumber) {
-        updatePhoneNumber({
-          ...checkIfPersonExists,
-          number: newPhoneNumber,
-        }).then(() => {
-          const updatedPersons = persons.map((person) =>
-            person.id === checkIfPersonExists.id
-              ? { ...person, number: newPhoneNumber }
-              : person
-          );
-          displayErrorMessage(`Updated phone number for ${newPerson.name}`);
-          setPersons(updatedPersons);
-        });
+        handleUpdatePhoneNumber(checkIfPersonExists, newPerson);
       }
     } else {
-      addNewPerson(newPerson).then((res) => {
-        displayErrorMessage(`Added ${newPerson.name}`);
-        setPersons(persons.concat(res));
-      });
+      handleAddPerson(newPerson);
     }
     setNewName("");
     setNewPhoneNumber("");
+  };
+
+  const displayMessage = (message, type) => {
+    setMessage(message);
+    setMessageType(type);
+    setTimeout(() => {
+      setMessage(null);
+      setMessageType(null);
+    }, 2000);
   };
 
   const shownPersons = persons.filter((person) =>
@@ -97,7 +132,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={errorMessage} />
+      <Notification message={message} type={messageType} />
       <Filter handleFilterChange={handleFilterChange} />
       <h2>add a new</h2>
       <PersonForm
