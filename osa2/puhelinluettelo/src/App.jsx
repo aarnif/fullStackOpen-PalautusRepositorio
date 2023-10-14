@@ -21,7 +21,7 @@ const App = () => {
   const errorMessageType = "error";
 
   useEffect(() => {
-    getAllPersons().then((data) => setPersons(data));
+    getAllPersons().then((data) => setPersons(data.persons));
   }, []);
 
   const handleFilterChange = () => {
