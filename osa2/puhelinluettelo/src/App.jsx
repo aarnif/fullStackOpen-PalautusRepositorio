@@ -21,7 +21,7 @@ const App = () => {
   const errorMessageType = "error";
 
   useEffect(() => {
-    getAllPersons().then((data) => setPersons(data.persons));
+    getAllPersons().then((data) => setPersons(data));
   }, []);
 
   const handleFilterChange = () => {
@@ -89,10 +89,14 @@ const App = () => {
   };
 
   const handleAddPerson = (person) => {
-    addNewPerson(person).then((res) => {
-      displayMessage(`Added ${person.name}`, successMessageType);
-      setPersons(persons.concat(res));
-    });
+    addNewPerson(person)
+      .then((res) => {
+        displayMessage(`Added ${person.name}`, successMessageType);
+        setPersons(persons.concat(res));
+      })
+      .catch((error) => {
+        displayMessage(error.response.data.error, errorMessageType);
+      });
   };
 
   const handleSubmit = () => {
