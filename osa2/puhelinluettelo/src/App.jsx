@@ -76,15 +76,8 @@ const App = () => {
         );
         setPersons(updatedPersons);
       })
-      .catch(() => {
-        displayMessage(
-          `Information of ${newData.name} has already been removed from server`,
-          errorMessageType
-        );
-        const currentPersons = persons.filter(
-          (person) => currentData.id !== person.id
-        );
-        setPersons(currentPersons);
+      .catch((error) => {
+        displayMessage(error.response.data.error, errorMessageType);
       });
   };
 
